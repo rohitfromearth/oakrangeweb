@@ -1,39 +1,43 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useSelector } from 'react-redux';
 
 const Sidebar = () => {
-  const { user } = useAuth();
+  const { role } = useSelector(state => state.auth);
 
-  const links = {
+  const tabs = {
     admin: [
-      { to: '/admin/users', label: 'Manage Users' },
-      { to: '/admin/devices', label: 'Manage Devices' }
+      { name: 'Manage Users', path: '/admin/manage-users' },
+      { name: 'Manage Devices', path: '/admin/manage-devices' },
     ],
     officer: [
-      { to: '/officer/devices', label: 'Devices' },
-      { to: '/officer/identify', label: 'Identify View' },
-      { to: '/officer/review', label: 'Expert Review' },
-      { to: '/officer/calibration', label: 'Calibration History' }
+      { name: 'Devices', path: '/officer/devices' },
+      { name: 'Identify View', path: '/officer/identify' },
+      { name: 'Expert Review', path: '/officer/expert-review' },
+      { name: 'Calibration History', path: '/officer/calibration' },
     ],
     businessUser: [
-      { to: '/', label: 'Devices' },
-      { to: '/identify', label: 'Identify View' },
-      { to: '/review', label: 'Expert Review' },
-      { to: '/calibration', label: 'Calibration History' }
-    ]
+      { name: 'Devices', path: '/business/devices' },
+      { name: 'Identify View', path: '/business/identify' },
+      { name: 'Expert Review', path: '/business/expert-review' },
+      { name: 'Calibration History', path: '/business/calibration' },
+    ],
   };
 
   return (
-    <aside style={{ width: '200px', background: '#f4f4f4', padding: '10px' }}>
-      <nav>
-        <ul style={{ listStyle: 'none', padding: 0 }}>
-          {links[user?.role]?.map(link => (
-            <li key={link.to}>
-              <NavLink to={link.to}>{link.label}</NavLink>
-            </li>
-          ))}
-        </ul>
+    <aside className="w-64 bg-white shadow-md p-4">
+      <nav className="flex flex-col space-y-2">
+        {tabs[role]?.map(tab => (
+          <NavLink
+            key={tab.name}
+            to={tab.path}
+            className={({ isActive }) =>
+              `p-2 rounded ${isActive ? 'bg-blue-500 text-white' : 'hover:bg-gray-200'}`
+            }
+          >
+            {tab.name}
+          </NavLink>
+        ))}
       </nav>
     </aside>
   );

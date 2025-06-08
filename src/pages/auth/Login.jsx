@@ -1,63 +1,57 @@
-
 // src/pages/auth/Login.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { login } from '../../store/authSlice';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
 
 const Login = () => {
   const [customerName, setCustomerName] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const { login } = useAuth();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [error, setError] = useState('');
 
-  const handleSubmit = async (e) => {
+  const { status, error, role } = useSelector((state) => state.auth);
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    try {
-      // Call real API loginUser via context
-      const data = await login({ customer_name: customerName, username, password });
-      // data: { message, token, user_type }
-
-      const role = data.user_type;
-      if (role === 'admin') {
-        console.log('[NAVIGATION LOG] Navigating to: /admin/users');
-        navigate('/admin/users');
-      } else if (role === 'officer') {
-        console.log('[NAVIGATION LOG] Navigating to: /officer/devices');
-        navigate('/officer/devices');
-      } else {
-        console.log('[NAVIGATION LOG] Navigating to: /');
-        navigate('/');
-      }
-    } catch (err) {
-      setError(err.message);
-    }
+    dispatch(login({ customer_name: customerName, username, password }));
   };
+
+  useEffect(() => {
+    if (status === 'succeeded') {
+      switch (role) {
+        case 'system_admin':
+          return navigate('/admin/manage-users');
+        case 'officer':
+          return navigate('/officer/devices');
+        case 'business_user':
+          return navigate('/business/devices');
+        default:
+          return navigate('/login');
+      }
+    }
+  }, [status, role, navigate]);
 
   return (
     <div style={{ maxWidth: 400, margin: 'auto', padding: 20 }}>
       <h2>Login</h2>
+      {status === 'loading' && <p>Logging in…</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <form onSubmit={handleSubmit}>
         <div>
           <label>Customer Name</label>
           <input
-            type="text"
             value={customerName}
             onChange={(e) => setCustomerName(e.target.value)}
-            placeholder="Customer Name"
             required
           />
         </div>
         <div>
           <label>Username</label>
           <input
-            type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="Username"
             required
           />
         </div>
@@ -67,11 +61,10 @@ const Login = () => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
             required
           />
         </div>
-        <button type="submit">Login</button>
+        <button disabled={status === 'loading'}>Login</button>
       </form>
     </div>
   );

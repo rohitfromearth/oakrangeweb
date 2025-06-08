@@ -1,0 +1,4 @@
+[
+  { "id": "R-330", "status": "online", "lastSync": "2025-06-01", "assignedTo": "Customer A" },
+  { "id": "R-331", "status": "offline", "lastSync": "2025-05-28", "assignedTo": "Customer B" }
+]

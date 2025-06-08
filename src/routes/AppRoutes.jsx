@@ -28,26 +28,16 @@ const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
 
       {/* Admin Routes */}
-      <Route
-        path="/admin/users"
-        element={
-          <ProtectedRoute role="admin">
-            <AdminLayout>
-              <ManageUsers />
-            </AdminLayout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/admin/devices"
-        element={
-          <ProtectedRoute role="admin">
-            <AdminLayout>
-              <ManageDevices />
-            </AdminLayout>
-          </ProtectedRoute>
-        }
-      />
+     <Route path="/admin/manage-users" element={
+  <ProtectedRoute allowedRoles={['admin']}>
+    <ManageUsers />
+  </ProtectedRoute>
+} />
+<Route path="/admin/manage-devices" element={
+  <ProtectedRoute allowedRoles={['admin']}>
+    <ManageDevices />
+  </ProtectedRoute>
+} />
 
       {/* Officer Routes */}
       <Route
